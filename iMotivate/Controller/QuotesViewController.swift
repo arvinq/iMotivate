@@ -82,56 +82,9 @@ class QuotesViewController: UICollectionViewController {
         cell.quoteImageView.addGestureRecognizer(imageTap)
         cell.quoteImageView.isUserInteractionEnabled = true
         imageViewToEnlarge = cell.quoteImageView
-        
         enableImageFullscreen(imageTap)
     }
     
-    
-    /// Being called when a tap on imageView is triggered
-    @objc private func enableImageFullscreen(_ sender: UITapGestureRecognizer) {
-        guard let imageViewToEnlarge = imageViewToEnlarge else { return }
-        
-        let newImageView = UIImageView(image: imageViewToEnlarge.image)
-        newImageView.contentMode = .scaleAspectFit
-        newImageView.frame = self.view.bounds
-        newImageView.backgroundColor = .black
-        newImageView.isUserInteractionEnabled = true
-        
-        // Create a new gestureRecognizer for this new full screen Imageview.
-        // Include all direction to account for all the finger swipes.
-        let imageSwipeRight = UISwipeGestureRecognizer(target: self, action: #selector(disableImageFullscreen(_:)))
-        let imageSwipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(disableImageFullscreen(_:)))
-        let imageSwipeUp = UISwipeGestureRecognizer(target: self, action: #selector(disableImageFullscreen(_:)))
-        let imageSwipeDown = UISwipeGestureRecognizer(target: self, action: #selector(disableImageFullscreen(_:)))
-        
-        imageSwipeDown.direction = .down
-        imageSwipeUp.direction = .up
-        imageSwipeLeft.direction = .left
-        imageSwipeRight.direction = .right
-        
-        newImageView.addGestureRecognizer(imageSwipeDown)
-        newImageView.addGestureRecognizer(imageSwipeUp)
-        newImageView.addGestureRecognizer(imageSwipeLeft)
-        newImageView.addGestureRecognizer(imageSwipeRight)
-        
-        // Hide all of the elements visible. and add this imageView as subview.
-        self.navigationController?.isNavigationBarHidden = true
-        self.view.addSubview(newImageView)
-        
-    }
-    
-    // This is called when tapping imageView. all of the hidden elements are now shown
-    // Remove the imageView from superView.
-    @objc private func disableImageFullscreen(_ sender: UISwipeGestureRecognizer) {
-        if sender.state == .ended {
-            switch sender.direction {
-            case .right, .left, .up, .down:
-                self.navigationController?.isNavigationBarHidden = false
-                sender.view?.removeFromSuperview()
-            default: break
-            }
-        }
-    }
     
 }
 
@@ -153,3 +106,83 @@ extension QuotesViewController: UICollectionViewDelegateFlowLayout {
     
 }
 
+
+/**
+ All Gesture Methods
+ */
+extension QuotesViewController {
+    //MARK:- Gesture Methods
+    
+    /// Being called when a tap on imageView is triggered
+    @objc private func enableImageFullscreen(_ sender: UITapGestureRecognizer) {
+        guard let imageViewToEnlarge = imageViewToEnlarge else { return }
+        
+        let newImageView = UIImageView(image: imageViewToEnlarge.image)
+        newImageView.contentMode = .scaleAspectFit
+        newImageView.frame = self.view.bounds
+        newImageView.backgroundColor = .black
+        newImageView.isUserInteractionEnabled = true
+        
+        
+        let swipeGestures = setupSwipeGesture(onView: newImageView)
+        setupPanGesture(swipeGestures: swipeGestures, onView: newImageView)
+        
+        // Hide all of the elements visible. and add this imageView as subview.
+        self.navigationController?.isNavigationBarHidden = true
+        self.view.addSubview(newImageView)
+        
+    }
+    
+    /// Setting up PanGesture. We require swipeGesture to fail so we can trigger panning of imageView
+    func setupPanGesture(swipeGestures: [UISwipeGestureRecognizer], onView newImageView: UIImageView) {
+        let imagePan = UIPanGestureRecognizer(target: self, action: #selector(dragged(_:)))
+        for swipeGesture in swipeGestures {
+            imagePan.require(toFail: swipeGesture)
+        }
+        newImageView.addGestureRecognizer(imagePan)
+    }
+    
+    func setupSwipeGesture(onView newImageView: UIImageView) -> [UISwipeGestureRecognizer] {
+        // Create a new gestureRecognizer for this new full screen Imageview.
+        // Include all direction to account for all the finger swipes.
+        let imageSwipeRight = UISwipeGestureRecognizer(target: self, action: #selector(disableImageFullscreen(_:)))
+        let imageSwipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(disableImageFullscreen(_:)))
+        let imageSwipeUp = UISwipeGestureRecognizer(target: self, action: #selector(disableImageFullscreen(_:)))
+        let imageSwipeDown = UISwipeGestureRecognizer(target: self, action: #selector(disableImageFullscreen(_:)))
+        
+        imageSwipeDown.direction = .down
+        imageSwipeUp.direction = .up
+        imageSwipeLeft.direction = .left
+        imageSwipeRight.direction = .right
+        
+        newImageView.addGestureRecognizer(imageSwipeDown)
+        newImageView.addGestureRecognizer(imageSwipeUp)
+        newImageView.addGestureRecognizer(imageSwipeLeft)
+        newImageView.addGestureRecognizer(imageSwipeRight)
+        
+        return [imageSwipeUp, imageSwipeDown, imageSwipeLeft, imageSwipeRight]
+    }
+    
+    // This is called when tapping imageView. all of the hidden elements are now shown
+    // Remove the imageView from superView.
+    @objc private func disableImageFullscreen(_ sender: UISwipeGestureRecognizer) {
+        if sender.state == .ended {
+            switch sender.direction {
+            case .right, .left, .up, .down:
+                self.navigationController?.isNavigationBarHidden = false
+                sender.view?.removeFromSuperview()
+            default: break
+            }
+        }
+        
+    }
+    
+    @objc private func dragged(_ gestureRecognizer: UIPanGestureRecognizer) {
+        if gestureRecognizer.state == UIGestureRecognizer.State.began ||
+            gestureRecognizer.state == UIGestureRecognizer.State.changed {
+            let translation = gestureRecognizer.translation(in: self.view)
+            gestureRecognizer.view!.center = CGPoint(x: gestureRecognizer.view!.center.x + translation.x, y: gestureRecognizer.view!.center.y + translation.y)
+            gestureRecognizer.setTranslation(CGPoint(x: 0, y: 0), in: self.view)
+        }
+    }
+}
