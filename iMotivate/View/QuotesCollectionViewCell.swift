@@ -8,14 +8,7 @@
 
 import UIKit
 
-protocol QuotesCellDelegate: class {
-    func Quotes(_ cell: UICollectionViewCell, showFullScreenOf imageView: UIImageView)
-    func QuotesDismiss(_ cell: UICollectionViewCell)
-}
-
 class QuotesCollectionViewCell: UICollectionViewCell {
-    
-    weak var quotesCellDelegate: QuotesCellDelegate?
     
     var quoteViewModel: QuoteViewModel? {
         didSet {
@@ -25,6 +18,7 @@ class QuotesCollectionViewCell: UICollectionViewCell {
         }
     }
     
+    //MARK:- Views
     let quoteLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
@@ -70,12 +64,15 @@ class QuotesCollectionViewCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        // we want to set the corner radius based on the size the constraints has set on the button.
-        // hence we do it in here where constraints are already done setting the sizes
+        // we want to set the image's content to be shown once constraints have been set.
+        // we do it here in layoutSubviews
         
         quoteImageView.layer.contentsRect = CGRect(x: 0, y: 0, width: 1, height: 0.2)
     }
     
+    /**
+     This is to setup cell view's properties and set the controls accordingly
+     */
     func setupCellView() {
         backgroundColor = .black
         layer.borderWidth = 1
@@ -88,7 +85,9 @@ class QuotesCollectionViewCell: UICollectionViewCell {
         setupConstraints()
     }
     
-    
+    /**
+     This is to setup the constraints
+     */
     func setupConstraints() {
         NSLayoutConstraint.activate([
             quoteLabel.centerYAnchor.constraint(equalTo: centerYAnchor),

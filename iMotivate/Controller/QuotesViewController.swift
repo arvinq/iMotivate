@@ -14,6 +14,7 @@ class QuotesViewController: UICollectionViewController {
     var imageTap: UITapGestureRecognizer?
     var imageViewToEnlarge: UIImageView?
     
+    //MARK:- View LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -37,10 +38,12 @@ class QuotesViewController: UICollectionViewController {
         navigationController?.navigationBar.barStyle = .black
     }
     
+    /** Function to end refresh */
     @objc func refreshItem() {
         collectionView.refreshControl?.endRefreshing()
     }
     
+    /** Calls the service method to fetch the quotes to be displayed */
     func fetchQuotes() {
         Service.shared.fetchQuotes { [weak self] quoteArray in
             guard let strongSelf = self else { return }
@@ -52,13 +55,10 @@ class QuotesViewController: UICollectionViewController {
             DispatchQueue.main.async {
                 strongSelf.collectionView.reloadData()
             }
-            
-            
         }
-        
     }
 
-    
+    //MARK:- Collection View delegate and datasource methods
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return quotesViewModels.count
     }
@@ -72,6 +72,9 @@ class QuotesViewController: UICollectionViewController {
     
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        // Get the cell that has been tapped and attach the imageTap gesture created to cell's quoteImageView
+        
         let cell = collectionView.cellForItem(at: indexPath) as! QuotesCollectionViewCell
      
         guard let imageTap = imageTap else { return }
@@ -84,7 +87,7 @@ class QuotesViewController: UICollectionViewController {
     }
     
     
-    //being called when a tap on imageView is triggered
+    /// Being called when a tap on imageView is triggered
     @objc private func enableImageFullscreen(_ sender: UITapGestureRecognizer) {
         guard let imageViewToEnlarge = imageViewToEnlarge else { return }
         
@@ -94,7 +97,8 @@ class QuotesViewController: UICollectionViewController {
         newImageView.backgroundColor = .black
         newImageView.isUserInteractionEnabled = true
         
-        //crate a new gestureRecognizer for this new Imageview.
+        // Create a new gestureRecognizer for this new full screen Imageview.
+        // Include all direction to account for all the finger swipes.
         let imageSwipeRight = UISwipeGestureRecognizer(target: self, action: #selector(disableImageFullscreen(_:)))
         let imageSwipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(disableImageFullscreen(_:)))
         let imageSwipeUp = UISwipeGestureRecognizer(target: self, action: #selector(disableImageFullscreen(_:)))
@@ -110,14 +114,14 @@ class QuotesViewController: UICollectionViewController {
         newImageView.addGestureRecognizer(imageSwipeLeft)
         newImageView.addGestureRecognizer(imageSwipeRight)
         
-        //hide all of the elements visible. and add this imageView as subview.
+        // Hide all of the elements visible. and add this imageView as subview.
         self.navigationController?.isNavigationBarHidden = true
         self.view.addSubview(newImageView)
         
     }
     
-    //this is called when tapping imageView. all of the hidden elements are now shown
-    //remove the imageView from superView.
+    // This is called when tapping imageView. all of the hidden elements are now shown
+    // Remove the imageView from superView.
     @objc private func disableImageFullscreen(_ sender: UISwipeGestureRecognizer) {
         if sender.state == .ended {
             switch sender.direction {
@@ -129,11 +133,12 @@ class QuotesViewController: UICollectionViewController {
         }
     }
     
-    
-    
 }
 
 
+/**
+ Delegate flow layout is used for the item's size and edge insets.
+ */
 extension QuotesViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

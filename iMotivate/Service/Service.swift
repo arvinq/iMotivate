@@ -12,6 +12,9 @@ import UIKit
 class Service {
     static let shared = Service()
     
+    /**
+     Fetches image from url provided
+     */
     func fetchImage(from imageUrl: URL, completion: @escaping (UIImage?)->()) {
                 
         let dataTask = URLSession.shared.dataTask(with: imageUrl) { (data, response, error) in

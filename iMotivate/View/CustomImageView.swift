@@ -40,6 +40,7 @@ class CustomImageView: UIImageView {
                     strongSelf.image = imageToCache
                 }
                 
+                //some image url doesn't have a picture, so we just included a dummy black image to prevent app from crashing
                 AppDelegate.shared.imageCache?.setObject(imageToCache ?? UIImage(named: "black.jpg")!, forKey: urlString as NSString)
                 
             }

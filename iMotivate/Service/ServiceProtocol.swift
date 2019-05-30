@@ -8,6 +8,7 @@
 
 import Foundation
 
+/** For Mock Service */
 protocol ServiceProtocol {
     func fetchQuotes(completion: @escaping ([Quote]?)->())
 }

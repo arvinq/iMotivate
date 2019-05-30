@@ -9,6 +9,10 @@
 import Foundation
 
 extension URL {
+    /**
+     This will be handy once the api includes some query items.
+     Be sure to update PropertyKey.swift
+     */
     func withQuery(items: [String: String]) -> URL? {
         var components = URLComponents(url: self, resolvingAgainstBaseURL: true)
         components?.queryItems = items.compactMap {

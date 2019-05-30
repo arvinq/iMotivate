@@ -8,6 +8,9 @@
 
 import Foundation
 
+/**
+ Some static values used inside the application
+ */
 struct PropertyKey {
     static let baseUrl = "https://s3-ap-southeast-2.amazonaws.com/taylors-arbitrary-bucket/quotes.json"
     static let queryItems = [String: String]()

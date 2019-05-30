@@ -8,6 +8,9 @@
 
 import Foundation
 
+/** we're only concern on displaying this properties
+    hence the structure
+ */
 struct Quote: Codable {
     let imageUrl: String
     let quoteText: String
