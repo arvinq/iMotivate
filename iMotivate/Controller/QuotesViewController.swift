@@ -65,7 +65,8 @@ class QuotesViewController: UICollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "QuotesCell", for: indexPath) as! QuotesCollectionViewCell
-        cell.quoteViewModel = quotesViewModels[indexPath.item]
+        let quotesViewModel = quotesViewModels[indexPath.item]
+        quotesViewModel.configure(cell)
         
         return cell
     }

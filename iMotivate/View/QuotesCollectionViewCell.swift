@@ -10,14 +10,6 @@ import UIKit
 
 class QuotesCollectionViewCell: UICollectionViewCell {
     
-    var quoteViewModel: QuoteViewModel? {
-        didSet {
-            quoteLabel.text = quoteViewModel?.quoteText
-            quoteImageView.setImage(usingUrl: quoteViewModel?.quoteStrUrl)
-            loader.stopAnimating()
-        }
-    }
-    
     //MARK:- Views
     let quoteLabel: UILabel = {
         let label = UILabel()
@@ -105,4 +97,18 @@ class QuotesCollectionViewCell: UICollectionViewCell {
     }
     
     
+}
+
+extension QuotesCollectionViewCell: QuoteViewModelView {
+    var quoteTextLabel: UILabel {
+        return quoteLabel
+    }
+    
+    var quoteImage: CustomImageView {
+        return quoteImageView
+    }
+    
+    var quoteLoader: UIActivityIndicatorView {
+        return loader
+    }
 }

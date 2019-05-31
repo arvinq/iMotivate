@@ -9,6 +9,12 @@
 import Foundation
 import UIKit
 
+protocol QuoteViewModelView {
+    var quoteImage: CustomImageView { get }
+    var quoteTextLabel: UILabel { get }
+    var quoteLoader: UIActivityIndicatorView { get }
+}
+
 struct QuoteViewModel {
     
     let quote: Quote
@@ -25,4 +31,13 @@ struct QuoteViewModel {
         self.quoteStrUrl = quote.imageUrl
     }
     
+}
+
+
+extension QuoteViewModel {
+    func configure(_ view: QuoteViewModelView) {
+        view.quoteTextLabel.text = quoteText
+        view.quoteImage.setImage(usingUrl: quoteStrUrl)
+        view.quoteLoader.stopAnimating()
+    }
 }
